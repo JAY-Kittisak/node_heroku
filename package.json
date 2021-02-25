@@ -2,15 +2,38 @@
   "name": "node_heroku",
   "version": "1.0.0",
   "description": "node api hosted on heroku",
-  "main": "server.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "rimraf dist && tsc",
+    "start": "npm run build && node dist/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "@typegoose/typegoose": "^7.2.0",
+    "apollo-server-express": "^2.12.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.5",
+    "graphql": "^14.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.11",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^0.17.6"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.6",
+    "@types/graphql": "^14.5.0",
+    "@types/jsonwebtoken": "^8.3.9",
+    "@types/mongoose": "^5.7.27",
+    "@types/node": "^13.13.4",
+    "rimraf": "^3.0.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
   },
   "engines": {
     "node": "12.18.3",
