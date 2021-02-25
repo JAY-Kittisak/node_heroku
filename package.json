@@ -21,6 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.11",
     "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
     "type-graphql": "^0.17.6"
   },
   "devDependencies": {
@@ -31,7 +32,6 @@
     "@types/jsonwebtoken": "^8.3.9",
     "@types/mongoose": "^5.7.27",
     "@types/node": "^13.13.4",
-    "rimraf": "^3.0.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3"
   },
