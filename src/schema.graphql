@@ -3,16 +3,67 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
+"""Job IT Model 2"""
+type JobIt {
+  id: ID!
+  typeJob: String!
+  comment: String!
+  desiredDate: String!
+  createdAt: DateTime!
+  user: User!
+}
+
 type Mutation {
-  signUp(password: String!, username: String!): User
+  signup(password: String!, email: String!, username: String!): User
+  signin(password: String!, username: String!): User
+  signout: ResponseMessage
+  requestResetPassword(email: String!): ResponseMessage
+  resetPassword(token: String!, password: String!): ResponseMessage
+  updateRoles(userId: String!, newRoles: [String!]!): User
+  deleteUser(userId: String!): ResponseMessage
+  createJob(desiredDate: String!, comment: String!, typeJob: String!): JobIt!
+  createTier(Email: String!, FAX: String!, phoneNumber: String!, address: String!, description: String!, businessType: String!, industrialEstate: String!, companyName: String!): Tier
 }
 
 type Query {
   users: [User]!
+  me: User
+  JobIts: [JobIt]!
+  jobMe(typeJob: String!): JobIt
+  Tiers: [Tier]!
+  TierById(id: String!): Tier
+  TierFindOne(companyName: String!): Tier
 }
 
-"""User Model"""
+type ResponseMessage {
+  message: String!
+}
+
+"""Factory Data"""
+type Tier {
+  id: ID!
+  industrialEstate: String!
+  businessType: String!
+  companyName: String!
+  description: String!
+  address: String!
+  phoneNumber: String!
+  FAX: String!
+  Email: String!
+  createdAt: DateTime!
+}
+
+"""UserModel"""
 type User {
   id: ID!
   username: String!
+  email: String!
+  roles: [String!]!
+  createdAt: DateTime!
+  jobIts: [JobIt]!
 }

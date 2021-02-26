@@ -1,63 +1,77 @@
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 
-import {AuthResolvers} from './resolvers/AuthResolvers'
-// import { UserModel } from "./entities/User";
+import { AuthResolvers } from './resolvers/AuthResolvers';
+import { JobRequestIt } from './resolvers/JobRequestIt';
+import { TierResolvers } from "./resolvers/TierResolvers";
 
-// const typeDefs = gql`
-//   type User {
-//     id: String!
-//     username: String!
-//     email: String!
-//     password: String!
-//   }
-
-//   type Query {
-//     users: [User]!
-//   }
-
-//   type Mutation {
-//     createUser(username: String!, email: String!, password: String!): User
-//   }
-// `;
-
-// interface InputArgs {
-//   username: string;
-//   email: string;
-//   password: string;
-// }
-
-
-// const resolvers = {
-//   Query: {
-//     users: () => UserModel.find(),
-//   },
-
-//   Mutation: {
-//     createUser: async (_: any, args: InputArgs) => {
-//       try {
-//         const { username, email, password } = args;
-
-//         const newUser = await UserModel.create({
-//           username,
-//           email,
-//           password
-//         })
-  
-//         return newUser;
-        
-//       } catch (error) {
-//         throw error
-//       }
-//     },
-//   },
-// };
+import { verifyToken, createToken, sendToken } from './utils/tokenHandler';
+import { AppContext } from './types';
+import { UserModel } from './entities/User';
 
 export default async () => {
-    const schema = await buildSchema({
-        resolvers: [AuthResolvers],
-        emitSchemaFile: { path: './src/schema.graphql' },
-        validate: false
-    });
-    return new ApolloServer({ schema });
+  const schema = await buildSchema({
+    resolvers: [AuthResolvers, JobRequestIt, TierResolvers],
+    emitSchemaFile: { path: "./src/schema.graphql" },
+    validate: false,
+  });
+
+  return new ApolloServer({
+    schema,
+    context: async ({ req, res }: AppContext) => {
+      const token = req.cookies[process.env.COOKIE_NAME!];
+
+      if (token) {
+        try {
+          // Verify token
+          const decodedToken = verifyToken(token) as {
+            userId: string;
+            tokenVersion: number;
+            iat: number;
+            exp: number;
+          } | null;
+
+          if (decodedToken) {
+            req.userId = decodedToken.userId;
+            req.tokenVersion = decodedToken.tokenVersion;
+
+            // Re generate token if below conditions are met
+            if (Date.now() / 1000 - decodedToken.iat > 6 * 60 * 60) {
+              const user = await UserModel.findById(req.userId);
+
+              if (user) {
+                // Check if the token version is correct
+
+                if (user.tokenVersion === req.tokenVersion) {
+                  // Update the token version in the user info in the database
+                  user.tokenVersion = user.tokenVersion + 1;
+
+                  const updatedUser = await user.save();
+
+                  if (updatedUser) {
+                    // Create token
+                    const token = createToken(
+                      updatedUser.id,
+                      updatedUser.tokenVersion
+                    );
+
+                    req.tokenVersion = updatedUser.tokenVersion;
+
+                    // Send token to the frontend
+                    sendToken(res, token);
+                  }
+                }
+              }
+            }
+          }
+        } catch (error) {
+          req.userId = undefined;
+          req.tokenVersion = undefined;
+        }
+      }
+
+      return { req, res };
+    },
+  });
 };
+

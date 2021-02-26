@@ -1,39 +1,49 @@
 import { getModelForClass, prop } from '@typegoose/typegoose';
+import mongoose from 'mongoose'
 import { ObjectType, Field, ID } from 'type-graphql';
 
-@ObjectType({ description: 'User Model' })
+import { RoleOptions } from '../types';
+import { JobIt } from './JobIt';
+
+@ObjectType({ description: 'UserModel' })
 export class User {
   @Field(() => ID)
   id: string;
 
   @Field()
-  @prop({ required: true, unique: true, trim: true, lowercase: true  })
+  @prop({ required: true, trim: true, unique: true, lowercase: true })
   username: string;
+  
+  @Field()
+  @prop({ required: true, trim: true })
+  email: string;
 
   @prop({ required: true })
   password: string;
 
+  @prop({ default: 0 })
+  tokenVersion: number;
+
+  @Field(() => [String])
+  @prop({
+    type: String,
+    enum: RoleOptions,
+    //enum เลือกได้ 1 ใน 4 เท่านั้นไม่สามารถพิ้มอย่างอื่นได้และมี autocomplete(เติมข้อความอัติโนมัติ) 
+    default: [RoleOptions.client],
+  })
+  roles: RoleOptions[];
+
+  @Field()
+  @prop({ default: () => Date.now() + 60 * 60 * 1000 * 7 })
+  createdAt: Date;
+
+  @Field(() => [JobIt], { nullable: 'items' })
+  @prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'JobIt'
+  })
+  jobIts: JobIt[]
 }
 
-export const UserModel = getModelForClass(User);
+export const UserModel = getModelForClass(User)
 
-
-
-// import mongoose from "mongoose";
-
-// const UserSchema = new mongoose.Schema({
-//   username: {
-//     type: String,
-//     required: true,
-//   },
-//   email: {
-//     type: String,
-//     required: true,
-//   },
-//   password: {
-//     type: String,
-//     required: true,
-//   },
-// });
-// // ------------------------------ User = ชื่อตาราง
-// export const UserModel = mongoose.model("User", UserSchema);
