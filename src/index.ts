@@ -5,21 +5,18 @@ import mongoose from 'mongoose';
 
 import createServer from "./createServer";
 
-const { PORT_DEV, DB_USER, DB_PASSWORD, DB_ENDPOINT, DB_NAME } = process.env;
+// /const { DATA } = process.env;
 
 const startServer = async () => {
     try {
         // Connect to the database *_*
-        await mongoose.connect(
-            `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_NAME}?retryWrites=true&w=majority`,
-            {
-                useCreateIndex: true,
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                useFindAndModify: true
-            }
-        );
-        const port = process.env.PORT || PORT_DEV;
+        await mongoose.connect(`${process.env.DATABASE_URL}`, {
+            useCreateIndex: true,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useFindAndModify: true
+        });
+        const port = process.env.PORT || 5000;
         const app = express();
         const server = createServer();
 
