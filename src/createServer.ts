@@ -20,6 +20,7 @@ export default async () => {
         schema,
         introspection: true,
         playground: true,
+        apollo: { key: process.env.APOLLO_KEY },
         context: async ({ req, res }: AppContext) => {
             const token = req.cookies[process.env.COOKIE_NAME!];
 
