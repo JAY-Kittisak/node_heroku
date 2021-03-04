@@ -21,7 +21,9 @@ const startServer = async () => {
         const port = process.env.PORT || 5000;
         const app = express();
         app.use(cookieParser());
+        app.set("trust proxy",1)
         const server = await createServer();
+
 
         server.applyMiddleware({
             app,
