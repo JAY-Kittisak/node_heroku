@@ -24,7 +24,6 @@ const startServer = async () => {
         app.set('trust proxy', 1);
         const server = await createServer();
 
-        // server.set("trust proxy",1)
         server.applyMiddleware({
             app,
             cors: { origin: process.env.FRONTEND_URI, credentials: true }

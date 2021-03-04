@@ -7,7 +7,7 @@ export const createToken = (userId: string, tokenVersion: number) =>
   })
 
 export const sendToken = (res: Response, token: string) =>
-    res.cookie(process.env.COOKIE_NAME!, token, { httpOnly: true });
+    res.cookie(process.env.COOKIE_NAME!, token, { httpOnly: false, sameSite: 'lax' });
 
 export const verifyToken = (token: string) =>
   jwt.verify(token, process.env.COOKIE_SECRET!)
