@@ -21,10 +21,10 @@ const startServer = async () => {
         const port = process.env.PORT || 5000;
         const app = express();
         app.use(cookieParser());
-        app.set("trust proxy",1)
+        app.set('trust proxy', 1);
         const server = await createServer();
 
-
+        // server.set("trust proxy",1)
         server.applyMiddleware({
             app,
             cors: { origin: process.env.FRONTEND_URI, credentials: true }
