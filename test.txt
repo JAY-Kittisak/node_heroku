@@ -1,0 +1,2 @@
+https://nervous-gates-aea41b.netlify.app
+FRONTEND_URI= http://localhost:3000
